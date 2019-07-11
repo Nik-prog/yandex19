@@ -29,25 +29,26 @@ public class Composition2 {
 	            Kindex--;
 	            display();
 			    System.out.print("Цель " + targ+".");
-	            if(arr2[index2]!=0 && targ%arr2[index2]==0 && Kindex>0) {
-	            	if(index==SIZE) {
-	            		System.out.println(" " + work[index2]+" мало. Предметов больше нет");
-	            	}else {
-	            		System.out.println(" " + work[index2]+" мало.");
-	            	}
-		            if(knapsack(targ/arr2[index2],Ves,arr2,Kindex,index)) {
-		                return true;
-		            }
-	            }else if(arr2[index2]!=0 && targ%arr2[index2]==0 && Kindex==0) {
-	            	if(targ/arr2[index2]==1) {
-	            		if(knapsack(targ/arr2[index2],Ves,arr2,Kindex,index))
-	            			return true;
-	            	}
-	            		 
-	            	else {
-	            		System.out.println(" " + work[index2]+" Не подходит.");
-	            		arr2[index2]=0;
-	            		Kindex++;
+	            if(arr2[index2]!=0 && targ%arr2[index2]==0) {
+	            	if (Kindex>0) {
+		                if(index==SIZE) {
+		            		System.out.println(" " + work[index2]+" мало. Предметов больше нет");
+		            	}else {
+		            		System.out.println(" " + work[index2]+" мало.");
+		            	}
+			            if(knapsack(targ/arr2[index2],Ves,arr2,Kindex,index)) {
+			                return true;
+			            }
+	            	}else if(Kindex==0) {
+		            	if(targ/arr2[index2]==1) {
+		            		if(knapsack(targ/arr2[index2],Ves,arr2,Kindex,index))
+		            			return true;
+		            	}
+		            	else {
+		            		System.out.println(" " + work[index2]+" Не подходит.");
+		            		arr2[index2]=0;
+		            		Kindex++;
+		            	}
 	            	}
 	            }
 	            else {
