@@ -98,7 +98,7 @@ public class GrafSubstring2 {
 			
 			
 		}
-		
+		br.close();
 		nVert=lWord.size();
 		
 		System.out.println(nVert);//количество вершин графа
