@@ -25,24 +25,26 @@ public class RLECompression {
 		List<SubStr> SubStringLine = new ArrayList<SubStr>();
 		
 		int strLength=0;
-		int strSum=0;
+		int strSumS=0;
+		int strSumT=0;
 		//int count=0;
 		while(match.find()) {		
-			if((match.end()-strSum)==1) {
+			if((match.end()-strSumS)==1) {
 				strLength=1;	//если повторов нет, пишем 1
 			}
 			else {
-				strLength=Integer.parseInt(str.substring(strSum, match.end()-1));// если повторы есть, пишем их кол-во
+				strLength=Integer.parseInt(str.substring(strSumS, match.end()-1));// если повторы есть, пишем их кол-во
 			}
-			strSum=match.end();
-			SubStr symbol= new SubStr(strLength,match.group(),strSum);
+			strSumT=strSumT+strLength;
+			strSumS=match.end();
+			SubStr symbol= new SubStr(strLength,match.group(),strSumS,strSumT);
 			SubStringLine.add(symbol); //
-//			System.out.println(strLength+" "+strSum);
+			System.out.println(strLength+" "+strSumS+" "+strSumT);
 			//count++;
 //			StrLine.add(match.group());
-		}
-		
+		}		
 
+		
 		int Nsize = Integer.parseInt(br.readLine()); //кол-во запросов	
 		int [][] Request= new int[Nsize][2]; //массив с запросами
 		
@@ -60,21 +62,46 @@ public class RLECompression {
 			System.out.println(Request[i][0]+" "+Request[i][1]);
 		}
 		System.out.println("Вывод");
+			
+		for (int i=0;i<Nsize;i++) {
+			RequestAnswer(Request[i][0],Request[i][1],SubStringLine);
+/*			int count=0;
+			while(Request[i][0]>SubStringLine.get(count).getStrSum()) {
+				count++;
+				
+			}*/
+		}
+		
+		
 //		System.out.format(Locale.US,"%1.10f%n", ExpectValue);
 
 	}
+	
+	public static void RequestAnswer(int Start, int End, List<SubStr> SubStringLine) { //метод, который выполняет запросы
+		int count=0;
+		while(Start>=SubStringLine.get(count).getStrSumT()) {
+			count++;
+		}
+		int count2=count;
+		while(End>SubStringLine.get(count2).getStrSumT()) {
+			count2++;
+		}
+		System.out.println(SubStringLine.get(count2).getStrSumS()-SubStringLine.get(count-1).getStrSumS());
+	}
 }
 
-//класс с данными по встречам
+//класс с данными по сжатию
 class SubStr{
 	private String Symb; //символ
 	private int nSymb; //кол-во сжатых символов
-	private int strSum; //длина строки всего 
+	private int strSumS; //длина сжатой строки всего 
+	private int strSumT; //длина исходной строки всего 
 	
-	public SubStr(int nsymb, String Symbol, int sum) {
+	public SubStr(int nsymb, String Symbol, int sumS, int sumT) {
 		nSymb=nsymb;
 		Symb=Symbol;
-		strSum=sum;
+		strSumS=sumS;
+		strSumT=sumT;
 	}
 	public String getSymb() {
 		return Symb;
@@ -82,7 +109,10 @@ class SubStr{
 	public int getN() {
 		return nSymb;
 	}
-	public int getStrSum() {
-		return strSum;
+	public int getStrSumS() {
+		return strSumS;
+	}
+	public int getStrSumT() {
+		return strSumT;
 	}
 }
