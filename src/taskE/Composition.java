@@ -74,6 +74,7 @@ public class Composition {
 		int Ksize = Integer.parseInt(tk.nextToken());
 
 		inpLine =  br.readLine();
+		br.close();
 		tk = new StringTokenizer(inpLine);
 		
 //		String[] arrS=inpLine.split(" ");
