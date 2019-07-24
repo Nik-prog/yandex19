@@ -21,13 +21,11 @@ public class RLECompression {
 		
 		//Matcher match = Pattern.compile("[0-9]+|[a-z]").matcher(str);//разбивает строку на числа и символы по порядку
 		Matcher match = Pattern.compile("[a-z]").matcher(str);//разбивает строку на числа и символы по порядку
-//		List<String> StrLine = new ArrayList<String>();
 		List<SubStr> SubStringLine = new ArrayList<SubStr>();
 		
 		int strLength=0;
 		int strSumS=0;
-		int strSumT=0;
-		//int count=0;
+		long strSumT=0;
 		while(match.find()) {		
 			if((match.end()-strSumS)==1) {
 				strLength=1;	//если повторов нет, пишем 1
@@ -40,18 +38,17 @@ public class RLECompression {
 			SubStr symbol= new SubStr(strLength,match.group(),strSumS,strSumT);
 			SubStringLine.add(symbol); //
 		//	System.out.println(strLength+" "+strSumS+" "+strSumT);
-			//count++;
 //			StrLine.add(match.group());
 		}		
 
 		
 		int Nsize = Integer.parseInt(br.readLine()); //кол-во запросов	
-		int [][] Request= new int[Nsize][2]; //массив с запросами
+		long [][] Request= new long[Nsize][2]; //массив с запросами
 		
 		for(int i=0;i<Nsize;i++) {
 			inpLine = br.readLine().split(" ");			
-			Request[i][0]=Integer.parseInt(inpLine[0]);
-			Request[i][1]=Integer.parseInt(inpLine[1]);
+			Request[i][0]=Long.parseLong(inpLine[0]);
+			Request[i][1]=Long.parseLong(inpLine[1]);
 		}
 		br.close();
 		
@@ -62,15 +59,19 @@ public class RLECompression {
 	//		System.out.println(Request[i][0]+" "+Request[i][1]);
 	//	}
 	//	System.out.println("Вывод");
-			
+		long startTime1 = System.nanoTime();
+		
 		for (int i=0;i<Nsize;i++) {
 			RequestAnswer(Request[i][0],Request[i][1],SubStringLine);
-		}
-		
+		}	
+
+	    long stopTime1 = System.nanoTime();
+	    System.out.println((stopTime1 - startTime1)/1000 + " микросекунды");	    
+ 
 //		System.out.format(Locale.US,"%1.10f%n", ExpectValue);
 	}
 	
-	public static void RequestAnswer(int Start, int End, List<SubStr> SubStringLine) { //метод, который выполняет запросы
+	public static void RequestAnswer(long Start, long End, List<SubStr> SubStringLine) { //метод, который выполняет запросы
 		int count=0;
 		while(Start>SubStringLine.get(count).getStrSumT()) {
 			count++;
@@ -78,7 +79,8 @@ public class RLECompression {
 		int count2=count;
 		while(End>SubStringLine.get(count2).getStrSumT()) {
 			count2++;
-		}	
+		}
+		
 		
 		int answer=0;
 		if (count==count2) { //когда начало и конец запроса в одном блоке
@@ -86,48 +88,49 @@ public class RLECompression {
 				answer=1;
 			}
 			else {
-				String answer1=""+(End-Start+1);
-				answer=answer1.length()+1;
+				String addAnswer=""+(End-Start+1);
+				answer=addAnswer.length()+1;
 			}			
 		}
 		else {
 			if(count>0 && Start==SubStringLine.get(count-1).getStrSumT()+1 ||count==0 & Start==1) { //начало запроса в начале списка
-				int addAnswer;
+				int SubAnswer;
 				if (Start==1) {
-					addAnswer=0;
+					SubAnswer=0;
 				}
 				else {
-					addAnswer=SubStringLine.get(count-1).getStrSumS();
+					SubAnswer=SubStringLine.get(count-1).getStrSumS();
 				}				
 				
 				if(End==SubStringLine.get(count2-1).getStrSumT()+1) {//конец запроса в начале блока
-					answer=(SubStringLine.get(count2-1).getStrSumS()-addAnswer)+1;					
+					answer=(SubStringLine.get(count2-1).getStrSumS()-SubAnswer)+1;					
 				}
 				else if(End<SubStringLine.get(count2).getStrSumT()) {//конец запроса в середине блока
-					String answer1=""+(End-SubStringLine.get(count2-1).getStrSumT());
-					answer=(SubStringLine.get(count2-1).getStrSumS()-addAnswer)+answer1.length()+1;
+					String addAnswer1=""+(End-SubStringLine.get(count2-1).getStrSumT());
+					answer=(SubStringLine.get(count2-1).getStrSumS()-SubAnswer)+addAnswer1.length()+1;
 				}
 				else {								//конец запроса в конце блока
-					answer=(SubStringLine.get(count2).getStrSumS()-addAnswer);
+					answer=(SubStringLine.get(count2).getStrSumS()-SubAnswer);
 				}
 			}
 			else {
-				String answer2;
+				String addAnswer2;
 				if(Start==SubStringLine.get(count).getStrSumT()) {//начало запроса в конце списка
-					answer2="";
+					addAnswer2="";
 				}
 				else {			//начало запроса в середине списка
-					answer2=""+(SubStringLine.get(count).getStrSumT()-Start+1);
+					addAnswer2=""+(SubStringLine.get(count).getStrSumT()-Start+1);
 				}
+				
 				if(End==SubStringLine.get(count2-1).getStrSumT()+1) {//конец запроса в начале блока
-					answer=(SubStringLine.get(count2-1).getStrSumS()-SubStringLine.get(count).getStrSumS())+answer2.length()+2;	
+					answer=(SubStringLine.get(count2-1).getStrSumS()-SubStringLine.get(count).getStrSumS())+addAnswer2.length()+2;	
 				}
 				else if(End<SubStringLine.get(count2).getStrSumT()) {//конец запроса в середине блока
-					String answer1=""+(End-SubStringLine.get(count2-1).getStrSumT());
-					answer=(SubStringLine.get(count2-1).getStrSumS()-SubStringLine.get(count).getStrSumS())+answer2.length()+answer1.length()+2;					
+					String addAnswer1=""+(End-SubStringLine.get(count2-1).getStrSumT());
+					answer=(SubStringLine.get(count2-1).getStrSumS()-SubStringLine.get(count).getStrSumS())+addAnswer2.length()+addAnswer1.length()+2;					
 				}
 				else {							//конец запроса в конце блока
-					answer=SubStringLine.get(count2).getStrSumS()-SubStringLine.get(count).getStrSumS()+answer2.length()+1;					
+					answer=SubStringLine.get(count2).getStrSumS()-SubStringLine.get(count).getStrSumS()+addAnswer2.length()+1;					
 				}				
 			}
 		}	
@@ -143,9 +146,9 @@ class SubStr{
 	private String Symb; //символ
 	private int nSymb; //кол-во сжатых символов
 	private int strSumS; //длина сжатой строки всего 
-	private int strSumT; //длина исходной строки всего 
+	private long strSumT; //длина исходной строки всего 
 	
-	public SubStr(int nsymb, String Symbol, int sumS, int sumT) {
+	public SubStr(int nsymb, String Symbol, int sumS, long sumT) {
 		nSymb=nsymb;
 		Symb=Symbol;
 		strSumS=sumS;
@@ -160,7 +163,7 @@ class SubStr{
 	public int getStrSumS() {
 		return strSumS;
 	}
-	public int getStrSumT() {
+	public long getStrSumT() {
 		return strSumT;
 	}
 }
